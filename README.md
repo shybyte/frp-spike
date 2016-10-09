@@ -1,6 +1,8 @@
 # frp-spike
 
-  npm install
-  npm start
+Playing with rxjs and xstream in typescript
 
-http://localhost:8080/  
+    npm install
+    npm start
+
+Open http://localhost:8080/ and console in browser  
