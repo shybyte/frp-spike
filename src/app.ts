@@ -1,46 +1,83 @@
 import * as Rx from 'rxjs/Rx';
 
-type AppEvent = 'start' | 'checkButton';
+/**
+ * UI Elements
+ */
+const checkButton = document.querySelector('#checkButton') as HTMLButtonElement;
 
-const checkButton = document.querySelector('#checkButton');
+/**
+ * Input Events
+ */
+const appStartInput$ = Rx.Observable.of('start');
+const checkButtonInput$ = Rx.Observable.fromEvent(checkButton, 'click').mapTo('checkButton');
 
-const appStartEvent$ = Rx.Observable.of('start');
-const checkButtonEvent$ = Rx.Observable.fromEvent(checkButton, 'click').mapTo('checkButton');
+/**
+ * Events when something is done.
+ */
+const extractionDone$ = new Rx.Subject();
+const checkDone$ = new Rx.Subject();
 
-const appEvents: Rx.Observable<AppEvent> = Rx.Observable.merge(appStartEvent$, checkButtonEvent$);
-
-const extractedEvent$ = new Rx.Subject();
-const checkSuccessEvent$ = new Rx.Subject();
-
-const extractEvent$ = appEvents.filter(ev => ev === 'start');
+/**
+ * Commands
+ */
+const extractCommand$ = appStartInput$.merge(checkButtonInput$);
 
 
-// const checkButtonState$ = che
+
+
+/**
+ * States
+ */
+
+type CheckingState = 'canCheck' | 'checking' | 'extracting';
+const checkButtonState$: Rx.Observable<CheckingState> = extractCommand$.mapTo('extracting')
+  .merge(extractionDone$.mapTo('checking'))
+  .merge(checkDone$.mapTo('canCheck'));
 
 
 /**
  * Simulating extraction by plugin
  */
 
-extractEvent$.subscribe(ev => {
+extractCommand$.subscribe(ev => {
   console.log('start extracting');
   const editor = document.getElementById('editor') as HTMLTextAreaElement;
   setTimeout(() => {
-    extractedEvent$.next(editor.value);
+    console.log('ExtractionDone: ', editor.value);
+    extractionDone$.next(editor.value);
   }, 500);
 });
 
 /**
  * Simulating checking
  */
-extractedEvent$.subscribe(ev => {
+extractionDone$.subscribe(ev => {
   console.log('start checking');
   setTimeout(() => {
-    checkSuccessEvent$.next({});
+    checkDone$.next();
   }, 500);
 });
 
-checkSuccessEvent$.subscribe(ev => {
+
+
+
+/**
+ * Update UI
+ */
+
+checkDone$.subscribe(ev => {
   console.log('check success');
 });
+
+checkButtonState$.subscribe(checkingState => {
+  checkButton.disabled = checkingState !== 'canCheck';
+  const labelByState: {[key: string]: string} =  {
+    canCheck: 'Check',
+    checking: 'Checking',
+    extracting: 'Extracting'
+  };
+  checkButton.innerText = labelByState[checkingState];
+});
+
+
 
