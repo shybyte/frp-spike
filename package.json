@@ -1,0 +1,23 @@
+{
+  "name": "frp-spike",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/webpack-dev-server --content-base public/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@reactivex/rxjs": "^5.0.0-beta.12",
+    "ts-loader": "^0.8.2",
+    "typescript": "^2.0.3",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "rxjs": "^5.0.0-beta.12",
+    "xstream": "^6.4.1"
+  }
+}
